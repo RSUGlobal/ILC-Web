@@ -17,6 +17,7 @@ use App\Http\Controllers\SignupController;
 use App\Http\Controllers\Student\AppointmentController;
 use App\Http\Controllers\Student\StudentController;
 use App\Http\Controllers\Student\StudentFormController;
+use App\Http\Controllers\Teacher\TeacherAuthController;
 use App\Http\Controllers\TeamLeader\TeamLeaderController;
 use App\Http\Controllers\TeamLeader\TeamLeaderFormController;
 use App\Http\Controllers\TeamLeader\TeamLeaderTimetableController;
@@ -24,6 +25,7 @@ use App\Http\Middleware\AdminMiddleware;
 use App\Http\Middleware\MentorMiddleware;
 use App\Http\Middleware\RedirectIfAuthenticated;
 use App\Http\Middleware\StudentMiddleware;
+use App\Http\Middleware\TeacherMiddleware;
 use App\Http\Middleware\TeamLeaderMiddleware;
 use Illuminate\Support\Facades\Route;
 
@@ -51,6 +53,21 @@ Route::middleware(RedirectIfAuthenticated::class)->group(function () {
     Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [LoginController::class, 'login'])->middleware('throttle:5,1');
 
+});
+
+// Teacher access is intentionally not linked from public or other role pages.
+Route::prefix('teacher')->name('teacher.')->group(function () {
+    Route::middleware(TeacherMiddleware::class.':guest')->group(function () {
+        Route::get('/login', [TeacherAuthController::class, 'showLoginForm'])->name('login');
+        Route::post('/login', [TeacherAuthController::class, 'login'])->middleware('throttle:5,1,teacher-login:')->name('login.store');
+        Route::get('/register', [TeacherAuthController::class, 'showRegistrationForm'])->name('register');
+        Route::post('/register', [TeacherAuthController::class, 'register'])->middleware('throttle:5,1,teacher-register:')->name('register.store');
+    });
+
+    Route::middleware(TeacherMiddleware::class)->group(function () {
+        Route::get('/dashboard', [TeacherAuthController::class, 'dashboard'])->name('dashboard');
+        Route::post('/logout', [TeacherAuthController::class, 'logout'])->name('logout');
+    });
 });
 
 // Mentor Routes
