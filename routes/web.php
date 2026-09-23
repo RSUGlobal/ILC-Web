@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\AdminMentorTimetableController;
 use App\Http\Controllers\Admin\AdminTeamLeaderTimetableController;
 use App\Http\Controllers\Admin\AttendanceController;
 use App\Http\Controllers\Admin\SemesterController;
+use App\Http\Controllers\CourseSyllabusController;
 use App\Http\Controllers\GuestPageController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\Mentor\MentorController;
@@ -17,6 +18,8 @@ use App\Http\Controllers\SignupController;
 use App\Http\Controllers\Student\AppointmentController;
 use App\Http\Controllers\Student\StudentController;
 use App\Http\Controllers\Student\StudentFormController;
+use App\Http\Controllers\Teacher\CourseSyllabusController as TeacherCourseSyllabusController;
+use App\Http\Controllers\Teacher\TeacherAuthController;
 use App\Http\Controllers\TeamLeader\TeamLeaderController;
 use App\Http\Controllers\TeamLeader\TeamLeaderFormController;
 use App\Http\Controllers\TeamLeader\TeamLeaderTimetableController;
@@ -24,6 +27,7 @@ use App\Http\Middleware\AdminMiddleware;
 use App\Http\Middleware\MentorMiddleware;
 use App\Http\Middleware\RedirectIfAuthenticated;
 use App\Http\Middleware\StudentMiddleware;
+use App\Http\Middleware\TeacherMiddleware;
 use App\Http\Middleware\TeamLeaderMiddleware;
 use Illuminate\Support\Facades\Route;
 
@@ -51,6 +55,28 @@ Route::middleware(RedirectIfAuthenticated::class)->group(function () {
     Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [LoginController::class, 'login'])->middleware('throttle:5,1');
 
+});
+
+// Teacher access is intentionally not linked from public or other role pages.
+Route::prefix('teacher')->name('teacher.')->group(function () {
+    Route::middleware(TeacherMiddleware::class.':guest')->group(function () {
+        Route::get('/login', [TeacherAuthController::class, 'showLoginForm'])->name('login');
+        Route::post('/login', [TeacherAuthController::class, 'login'])->middleware('throttle:5,1,teacher-login:')->name('login.store');
+        Route::get('/register', [TeacherAuthController::class, 'showRegistrationForm'])->name('register');
+        Route::post('/register', [TeacherAuthController::class, 'register'])->middleware('throttle:5,1,teacher-register:')->name('register.store');
+    });
+
+    Route::middleware(TeacherMiddleware::class)->group(function () {
+        Route::get('/dashboard', [TeacherAuthController::class, 'dashboard'])->name('dashboard');
+        Route::post('/logout', [TeacherAuthController::class, 'logout'])->name('logout');
+        Route::get('/syllabus', [TeacherCourseSyllabusController::class, 'edit'])->name('syllabus.edit');
+        Route::put('/syllabus', [TeacherCourseSyllabusController::class, 'update'])->name('syllabus.update');
+        Route::get('/syllabus/materials', [TeacherCourseSyllabusController::class, 'materials'])->name('syllabus.materials');
+        Route::put('/syllabus/pdf', [TeacherCourseSyllabusController::class, 'uploadSyllabus'])->name('syllabus.pdf');
+        Route::post('/syllabus/materials', [TeacherCourseSyllabusController::class, 'storeMaterial'])->name('materials.store');
+        Route::put('/syllabus/materials/{material}', [TeacherCourseSyllabusController::class, 'updateMaterial'])->name('materials.update');
+        Route::delete('/syllabus/materials/{material}', [TeacherCourseSyllabusController::class, 'destroyMaterial'])->name('materials.destroy');
+    });
 });
 
 // Mentor Routes
@@ -250,33 +276,9 @@ Route::get('/components/about', function () {
     return view('components.about');
 })->name('about')->withoutMiddleware(RedirectIfAuthenticated::class);
 
-// Course 127 Syllabus Page Route
-Route::get('/components/course127', function () {
-    return view('components.course127');
-})->name('course.127');
-
-// Course 127 Syllabus PDF (Consolidated route: handles both inline viewing and downloads)
-Route::get('/components/course127/pdf', function () {
-    return response()->file(public_path('images/RSU 127 Course Syllabus (Term 1, 2569).pdf'), [
-        'Content-Type' => 'application/pdf',
-        'Content-Disposition' => 'inline; filename="RSU 127 Course Syllabus.pdf"',
-    ]);
-})->name('course127.pdf');
-
-// Course Materials (Week 1 Class Slides & Chapter Textbook)
-Route::get('/materials/class-01', function () {
-    return response()->file(public_path('images/Class 01.pdf'), [
-        'Content-Type' => 'application/pdf',
-        'Content-Disposition' => 'inline; filename="Class 01 (Slides).pdf"',
-    ]);
-})->name('materials.class01');
-
-Route::get('/materials/chapter-01', function () {
-    return response()->file(public_path('images/Chapter 01.pdf'), [
-        'Content-Type' => 'application/pdf',
-        'Content-Disposition' => 'inline; filename="Chapter 01 (Textbook).pdf"',
-    ]);
-})->name('materials.chapter01');
+Route::get('/course', [CourseSyllabusController::class, 'show'])->name('course.show');
+Route::get('/course/pdf', [CourseSyllabusController::class, 'pdf'])->name('course.pdf');
+Route::get('/course-materials/{material}/pdf', [CourseSyllabusController::class, 'material'])->name('course.materials.pdf');
 
 // Logout
 

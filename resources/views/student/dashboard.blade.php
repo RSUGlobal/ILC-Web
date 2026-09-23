@@ -110,7 +110,7 @@
                     <p class="mb-2 ">In order to align with Rangsit University’s motto of “Creating a giving and sharing society,” RIC students who are enrolled in the following courses are expected to volunteer at the RSU PAL Centre for one hour each week for this 10-week program (from Week 4 to Week 13):</p>
                     <ol class="italic"><li>ENL/ILE 125: English for Global Exploration</li><li>ENL/ILE 126: English in TED</li>
                     <li>ENL/ILE 127: English at Work</li>
-                    <li>RSU/IRS 127: Intercultural Communication</li></ol>
+                    </ol>
                     <p >There are plans to expand this academic program to other courses next academic year (and every year thereafter) – with the eventual goal by the academic year of 2570 to have a minimum of 20,000 RSU/RIC students each year to attend this PAL centre.</p>
                 </div>
             </div>
