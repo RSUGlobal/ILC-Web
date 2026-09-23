@@ -223,6 +223,7 @@
                         </span>
                     </a>
                 </div>
+                @if ($courseSyllabus)
                 <div
                     class="flex flex-col items-left justify-center text-left gap-2 p-4 bg-white rounded-xl min-w-lg h-full max-h-64 border border-gray-200/20 shadow-md">
                     <svg class="bg-[#7d3c98]/20 rounded-lg p-1" xmlns="http://www.w3.org/2000/svg" width="36"
@@ -232,13 +233,11 @@
                             d="M4.26 10.147a60.436 60.436 0 0 0-.491 6.347A48.627 48.627 0 0 1 12 20.904a48.627 48.627 0 0 1 8.232-4.41a60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.57 50.57 0 0 0-2.658-.813A59.905 59.905 0 0 1 12 3.493a59.902 59.902 0 0 1 10.399 5.84a51.39 51.39 0 0 0-2.658.814m-15.482 0A50.697 50.697 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5a.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5" />
                     </svg>
 
-                    <h2 class="text-lg font-semibold text-gray-800">
-                        RSU/IRS 127
-                    </h2>
+                    <h2 class="text-lg font-semibold text-gray-800">{{ $courseSyllabus->code }}</h2>
                     <p class="text-xs text-gray-500 min-h-[60px]">
-                        Improve your academic writing, presentation skills, and confidence for your future career.
+                        {{ $courseSyllabus->title }}
                     </p>
-                    <a href="{{ route('course.127') }}" target="_blank" rel="noopener noreferrer"
+                    <a href="{{ route('course.show') }}" target="_blank" rel="noopener noreferrer"
                         class="inline-flex w-fit items-center gap-2 rounded-lg bg-[#7D3C98]/10 px-4 py-2 text-sm font-medium text-[#7D3C98] transition-all duration-300 hover:bg-[#7D3C98] hover:text-white">
                         Learn More
                         <span class="transition-transform duration-300 group-hover:translate-x-1">
@@ -246,6 +245,7 @@
                         </span>
                     </a>
                 </div>
+                @endif
                 <div
                     class="flex flex-col items-left justify-center text-left gap-2 p-4 bg-white rounded-xl min-w-lg h-full max-h-64 border border-gray-200/20 shadow-md">
                     <svg class="bg-[#7d3c98]/20 rounded-lg p-1"xmlns="http://www.w3.org/2000/svg" width="36"

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Teacher;
 
 use App\Http\Controllers\Controller;
+use App\Models\CourseSyllabus;
 use App\Models\Teacher;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Http\RedirectResponse;
@@ -80,6 +81,7 @@ class TeacherAuthController extends Controller
     {
         return view('teacher.dashboard', [
             'teacher' => Auth::guard('teacher')->user(),
+            'syllabus' => CourseSyllabus::current(),
         ]);
     }
 
