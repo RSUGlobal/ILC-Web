@@ -26,10 +26,6 @@
                 autofocus
                 placeholder="yourname@rsu.ac.th"
                 aria-invalid="{{ $errors->has('email') ? 'true' : 'false' }}"
-                @error
-                ('email')
-                aria-describedby="email-error"
-                @enderror
                 class="w-full rounded-md border border-gray-400 px-4 py-2.5 placeholder-gray-400 focus:border-[#7D3C98] focus:outline-none focus:ring-2 focus:ring-[#b085c2]"
             />
             @error ('email')
