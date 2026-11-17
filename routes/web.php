@@ -23,6 +23,7 @@ use App\Http\Controllers\Teacher\TeacherAuthController;
 use App\Http\Controllers\TeamLeader\TeamLeaderController;
 use App\Http\Controllers\TeamLeader\TeamLeaderFormController;
 use App\Http\Controllers\TeamLeader\TeamLeaderTimetableController;
+use App\Http\Controllers\GradeController;
 use App\Http\Middleware\AdminMiddleware;
 use App\Http\Middleware\MentorMiddleware;
 use App\Http\Middleware\RedirectIfAuthenticated;
@@ -79,6 +80,12 @@ Route::prefix('teacher')->name('teacher.')->group(function () {
         Route::post('/syllabi/{syllabus}/materials', [TeacherCourseSyllabusController::class, 'storeMaterial'])->name('materials.store');
         Route::put('/syllabi/{syllabus}/materials/{material}', [TeacherCourseSyllabusController::class, 'updateMaterial'])->name('materials.update');
         Route::delete('/syllabi/{syllabus}/materials/{material}', [TeacherCourseSyllabusController::class, 'destroyMaterial'])->name('materials.destroy');
+        Route::get('/grades', [GradeController::class, 'index'])->name('grades.index');
+        Route::post('/grades/store', [GradeController::class, 'store'])->name('grades.store');
+        Route::get('/grades/create', [GradeController::class, 'create'])->name('grades.create');
+        Route::get('/grades/edit/{grade}', [GradeController::class, 'edit'])->name('grades.edit');
+        Route::put('/grades/update/{grade}', [GradeController::class, 'update'])->name('grades.update');
+        Route::delete('/grades/delete/{grade}', [GradeController::class, 'destroy'])->name('grades.destroy');
     });
 });
 
@@ -122,6 +129,8 @@ Route::middleware([MentorMiddleware::class, 'auth'])->group(function () {
 // Student Routes
 Route::middleware([StudentMiddleware::class, 'auth'])->group(function () {
     Route::get('/student/dashboard', [StudentController::class, 'dashboard'])->name('student.dashboard');
+    Route::get('/student/grade', [StudentController::class, 'grade'])->name('student.grade');
+
 
     // Team Leader Consent Links
     Route::get('/student/links', [StudentController::class, 'links'])->name('student.links');

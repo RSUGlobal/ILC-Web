@@ -20,4 +20,8 @@ class Teacher extends Authenticatable
             'password' => 'hashed',
         ];
     }
+    public function grades()
+    {
+        return $this->hasMany(Grade::class);
+    }
 }

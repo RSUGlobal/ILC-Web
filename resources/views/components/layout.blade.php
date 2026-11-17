@@ -7,7 +7,7 @@
             content="width=device-width, initial-scale=1.0 final-scale=1.0 user-scalable=no"
         />
         <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-        <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/x-icon" href="{{url('/')}}" />
         <title>GLCC PAL Center</title>
         @vite("resources/css/app.css")
     </head>
@@ -114,6 +114,13 @@
                                     class="nav-link inline-flex items-center rounded-md border-[1.5px] border-[#7D3C98] bg-[#7D3C98] px-2 py-1 text-white lg:px-4 lg:py-2"
                                 >
                                     Links
+                                </a>
+
+                                  <a
+                                    href="{{ route("student.grade") }}"
+                                    class="nav-link inline-flex items-center rounded-md border-[1.5px] border-[#7D3C98] bg-[#7D3C98] px-2 py-1 text-white lg:px-4 lg:py-2"
+                                >
+                                    My Grade
                                 </a>
                                 <a
                                     href="{{ route("student.profile") }}"
