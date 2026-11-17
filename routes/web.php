@@ -69,13 +69,16 @@ Route::prefix('teacher')->name('teacher.')->group(function () {
     Route::middleware(TeacherMiddleware::class)->group(function () {
         Route::get('/dashboard', [TeacherAuthController::class, 'dashboard'])->name('dashboard');
         Route::post('/logout', [TeacherAuthController::class, 'logout'])->name('logout');
-        Route::get('/syllabus', [TeacherCourseSyllabusController::class, 'edit'])->name('syllabus.edit');
-        Route::put('/syllabus', [TeacherCourseSyllabusController::class, 'update'])->name('syllabus.update');
-        Route::get('/syllabus/materials', [TeacherCourseSyllabusController::class, 'materials'])->name('syllabus.materials');
-        Route::put('/syllabus/pdf', [TeacherCourseSyllabusController::class, 'uploadSyllabus'])->name('syllabus.pdf');
-        Route::post('/syllabus/materials', [TeacherCourseSyllabusController::class, 'storeMaterial'])->name('materials.store');
-        Route::put('/syllabus/materials/{material}', [TeacherCourseSyllabusController::class, 'updateMaterial'])->name('materials.update');
-        Route::delete('/syllabus/materials/{material}', [TeacherCourseSyllabusController::class, 'destroyMaterial'])->name('materials.destroy');
+        Route::get('/syllabi', [TeacherCourseSyllabusController::class, 'index'])->name('syllabi.index');
+        Route::get('/syllabi/create', [TeacherCourseSyllabusController::class, 'create'])->name('syllabus.create');
+        Route::post('/syllabi', [TeacherCourseSyllabusController::class, 'store'])->name('syllabus.store');
+        Route::get('/syllabi/{syllabus}/edit', [TeacherCourseSyllabusController::class, 'edit'])->name('syllabus.edit');
+        Route::put('/syllabi/{syllabus}', [TeacherCourseSyllabusController::class, 'update'])->name('syllabus.update');
+        Route::get('/syllabi/{syllabus}/materials', [TeacherCourseSyllabusController::class, 'materials'])->name('syllabus.materials');
+        Route::put('/syllabi/{syllabus}/pdf', [TeacherCourseSyllabusController::class, 'uploadSyllabus'])->name('syllabus.pdf');
+        Route::post('/syllabi/{syllabus}/materials', [TeacherCourseSyllabusController::class, 'storeMaterial'])->name('materials.store');
+        Route::put('/syllabi/{syllabus}/materials/{material}', [TeacherCourseSyllabusController::class, 'updateMaterial'])->name('materials.update');
+        Route::delete('/syllabi/{syllabus}/materials/{material}', [TeacherCourseSyllabusController::class, 'destroyMaterial'])->name('materials.destroy');
     });
 });
 
@@ -276,9 +279,9 @@ Route::get('/components/about', function () {
     return view('components.about');
 })->name('about')->withoutMiddleware(RedirectIfAuthenticated::class);
 
-Route::get('/course', [CourseSyllabusController::class, 'show'])->name('course.show');
-Route::get('/course/pdf', [CourseSyllabusController::class, 'pdf'])->name('course.pdf');
-Route::get('/course-materials/{material}/pdf', [CourseSyllabusController::class, 'material'])->name('course.materials.pdf');
+Route::get('/courses/{syllabus}', [CourseSyllabusController::class, 'show'])->name('course.show');
+Route::get('/courses/{syllabus}/pdf', [CourseSyllabusController::class, 'pdf'])->name('course.pdf');
+Route::get('/courses/{syllabus}/materials/{material}/pdf', [CourseSyllabusController::class, 'material'])->name('course.materials.pdf');
 
 // Logout
 

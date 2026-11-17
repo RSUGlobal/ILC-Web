@@ -11,28 +11,24 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class CourseSyllabusController extends Controller
 {
-    public function show(): View
+    public function show(CourseSyllabus $syllabus): View
     {
-        $syllabus = CourseSyllabus::current();
-
         return view('course.show', [
             'syllabus' => $syllabus,
             'materials' => $syllabus?->materials()->get()->groupBy('week') ?? collect(),
         ]);
     }
 
-    public function pdf(Request $request): BinaryFileResponse
+    public function pdf(Request $request, CourseSyllabus $syllabus): BinaryFileResponse
     {
-        $syllabus = CourseSyllabus::current();
-
         abort_unless($syllabus?->pdf_path, 404);
 
         return CoursePdf::respond($syllabus->pdf_path, $syllabus->code.' Course Syllabus', $request->boolean('download'));
     }
 
-    public function material(Request $request, CourseMaterial $material): BinaryFileResponse
+    public function material(Request $request, CourseSyllabus $syllabus, CourseMaterial $material): BinaryFileResponse
     {
-        abort_unless($material->course_syllabus_id === CourseSyllabus::current()?->id && $material->pdf_path, 404);
+        abort_unless($material->course_syllabus_id === $syllabus->id && $material->pdf_path, 404);
 
         return CoursePdf::respond($material->pdf_path, $material->title, $request->boolean('download'));
     }

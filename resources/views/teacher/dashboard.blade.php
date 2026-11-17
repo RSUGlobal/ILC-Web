@@ -11,37 +11,14 @@
     <p class="mt-1 break-words text-center font-medium">{{ $teacher->email }}</p>
 
     <div class="mt-8 rounded-xl border border-purple-200 bg-purple-50/50 p-5">
-        @if ($syllabus)
-            <p class="text-xs font-bold uppercase tracking-wider text-[#7D3C98]">{{ $syllabus->code }}</p>
-            <h2 class="mt-2 text-lg font-bold">{{ $syllabus->title }}</h2>
-            <p class="mt-1 text-sm text-gray-600">{{ $syllabus->term }}</p>
-        @else
-            <h2 class="text-lg font-bold">No course syllabus yet</h2>
-            <p class="mt-1 text-sm text-gray-600">Add course information to get started.</p>
-        @endif
-        <div
-            class="mt-5 flex flex-col gap-3 text-sm font-semibold text-[#7D3C98]"
-        >
-            <a
-                href="{{ route('teacher.syllabus.edit') }}"
-                class="hover:underline"
-                >{{ $syllabus ? 'Edit' : 'Add' }} course information →</a
-            >
-            @if ($syllabus)
-                <a
-                    href="{{ route('teacher.syllabus.materials') }}"
-                    class="hover:underline"
-                    >Manage syllabus & lesson PDFs →</a
-                >
-                <a
-                    href="{{ route('course.show') }}"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="hover:underline"
-                    >View public course page ↗</a
-                >
-            @endif
+        <div class="flex items-center justify-between gap-4">
+            <div>
+                <h2 class="text-lg font-bold">Course syllabi</h2>
+                <p class="mt-1 text-sm text-gray-600">{{ $syllabi->count() }} {{ Str::plural('course', $syllabi->count()) }} published.</p>
+            </div>
+            <a href="{{ route('teacher.syllabus.create') }}" class="rounded-lg bg-[#7D3C98] px-4 py-2 text-sm font-semibold text-white hover:bg-[#701b94]">+ Add course</a>
         </div>
+        <a href="{{ route('teacher.syllabi.index') }}" class="mt-5 inline-block text-sm font-semibold text-[#7D3C98] hover:underline">Manage all courses →</a>
     </div>
 
     <form method="POST" action="{{ route('teacher.logout') }}" class="mt-8">

@@ -81,7 +81,7 @@ class TeacherAuthController extends Controller
     {
         return view('teacher.dashboard', [
             'teacher' => Auth::guard('teacher')->user(),
-            'syllabus' => CourseSyllabus::current(),
+            'syllabi' => CourseSyllabus::query()->latest()->get(),
         ]);
     }
 

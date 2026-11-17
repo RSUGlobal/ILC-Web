@@ -20,54 +20,60 @@ use Throwable;
 
 class CourseSyllabusController extends Controller
 {
-    public function edit(): View
+    public function index(): View
     {
-        return view('teacher.syllabus.edit', ['syllabus' => CourseSyllabus::current() ?? CourseSyllabus::blank()]);
+        return view('teacher.syllabus.index', ['syllabi' => CourseSyllabus::query()->latest()->get()]);
     }
 
-    public function update(UpdateCourseSyllabusRequest $request): RedirectResponse
+    public function create(): View
+    {
+        return view('teacher.syllabus.edit', ['syllabus' => CourseSyllabus::blank()]);
+    }
+
+    public function store(UpdateCourseSyllabusRequest $request): RedirectResponse
+    {
+        return $this->save($request, CourseSyllabus::blank(), 'Course syllabus added. It is now visible on the home page.');
+    }
+
+    public function edit(CourseSyllabus $syllabus): View
+    {
+        return view('teacher.syllabus.edit', compact('syllabus'));
+    }
+
+    public function update(UpdateCourseSyllabusRequest $request, CourseSyllabus $syllabus): RedirectResponse
+    {
+        return $this->save($request, $syllabus, 'Course information updated. Your changes are now visible on the course page.');
+    }
+
+    private function save(UpdateCourseSyllabusRequest $request, CourseSyllabus $syllabus, string $message): RedirectResponse
     {
         $data = $request->validated();
         $data['schedule'] = collect($data['schedule'] ?? [])->sortBy('week')->values()->all();
         $data['assessments'] = array_values($data['assessments'] ?? []);
         $data['grading'] = array_values($data['grading'] ?? []);
-        $syllabus = CourseSyllabus::current() ?? CourseSyllabus::blank();
         $syllabus->fill($data)->save();
 
-        return redirect()->route('teacher.syllabus.edit')->with('status', 'Course information updated. Your changes are now visible on the course page.');
+        return redirect()->route('teacher.syllabus.edit', $syllabus)->with('status', $message);
     }
 
-    public function materials(): View|RedirectResponse
+    public function materials(CourseSyllabus $syllabus): View
     {
-        $syllabus = CourseSyllabus::current();
-        if (! $syllabus) {
-            return redirect()->route('teacher.syllabus.edit')->with('status', 'Save the course information before uploading PDFs.');
-        }
-
         return view('teacher.syllabus.materials', [
             'syllabus' => $syllabus,
             'materials' => $syllabus->materials()->get(),
         ]);
     }
 
-    public function uploadSyllabus(Request $request): RedirectResponse
+    public function uploadSyllabus(Request $request, CourseSyllabus $syllabus): RedirectResponse
     {
         $request->validateWithBag('syllabusPdf', ['pdf' => ['required', ...CoursePdf::RULES]]);
-        $syllabus = CourseSyllabus::current();
-        if (! $syllabus) {
-            return redirect()->route('teacher.syllabus.edit')->with('status', 'Save the course information before uploading PDFs.');
-        }
         $this->replacePdf($syllabus, $request->file('pdf'));
 
-        return redirect()->route('teacher.syllabus.materials')->with('status', 'Syllabus PDF updated.');
+        return redirect()->route('teacher.syllabus.materials', $syllabus)->with('status', 'Syllabus PDF updated.');
     }
 
-    public function storeMaterial(Request $request): RedirectResponse
+    public function storeMaterial(Request $request, CourseSyllabus $syllabus): RedirectResponse
     {
-        $syllabus = CourseSyllabus::current();
-        if (! $syllabus) {
-            return redirect()->route('teacher.syllabus.edit')->with('status', 'Save the course information before uploading PDFs.');
-        }
         $data = $request->validateWithBag('newMaterial', $this->materialRules($syllabus, true));
         $path = CoursePdf::store($request->file('pdf'));
 
@@ -83,13 +89,12 @@ class CourseSyllabusController extends Controller
             throw $exception;
         }
 
-        return redirect()->route('teacher.syllabus.materials')->with('status', 'Lesson PDF uploaded.');
+        return redirect()->route('teacher.syllabus.materials', $syllabus)->with('status', 'Lesson PDF uploaded.');
     }
 
-    public function updateMaterial(Request $request, CourseMaterial $material): RedirectResponse
+    public function updateMaterial(Request $request, CourseSyllabus $syllabus, CourseMaterial $material): RedirectResponse
     {
-        $syllabus = CourseSyllabus::current();
-        abort_unless($material->course_syllabus_id === $syllabus?->id, 404);
+        abort_unless($material->course_syllabus_id === $syllabus->id, 404);
         $data = $request->validateWithBag('material'.$material->id, $this->materialRules($syllabus, false));
         unset($data['pdf']);
 
@@ -99,12 +104,12 @@ class CourseSyllabusController extends Controller
             $material->update($data);
         }
 
-        return redirect()->route('teacher.syllabus.materials')->with('status', 'Lesson PDF updated.');
+        return redirect()->route('teacher.syllabus.materials', $syllabus)->with('status', 'Lesson PDF updated.');
     }
 
-    public function destroyMaterial(CourseMaterial $material): RedirectResponse
+    public function destroyMaterial(CourseSyllabus $syllabus, CourseMaterial $material): RedirectResponse
     {
-        abort_unless($material->course_syllabus_id === CourseSyllabus::current()?->id, 404);
+        abort_unless($material->course_syllabus_id === $syllabus->id, 404);
         $path = DB::transaction(function () use ($material) {
             $locked = CourseMaterial::lockForUpdate()->findOrFail($material->id);
             $path = $locked->pdf_path;
@@ -117,7 +122,7 @@ class CourseSyllabusController extends Controller
             Storage::disk('local')->delete($path);
         }
 
-        return redirect()->route('teacher.syllabus.materials')->with('status', 'Lesson PDF removed.');
+        return redirect()->route('teacher.syllabus.materials', $syllabus)->with('status', 'Lesson PDF removed.');
     }
 
     private function materialRules(CourseSyllabus $syllabus, bool $new): array

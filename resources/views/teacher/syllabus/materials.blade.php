@@ -12,7 +12,7 @@
                 @if ($syllabus->pdf_path)
                     <p class="break-words text-sm font-semibold text-slate-800">{{ $syllabus->pdf_name }}</p>
                     <a
-                        href="{{ route('course.pdf') }}"
+                        href="{{ route('course.pdf', $syllabus) }}"
                         target="_blank"
                         rel="noopener noreferrer"
                         class="mt-2 inline-block text-sm font-semibold text-[#7D3C98] hover:underline"
@@ -24,7 +24,7 @@
             </div>
             <form
                 method="POST"
-                action="{{ route('teacher.syllabus.pdf') }}"
+                action="{{ route('teacher.syllabus.pdf', $syllabus) }}"
                 enctype="multipart/form-data"
                 class="space-y-5"
                 data-pdf-upload
@@ -52,7 +52,7 @@
             @if (count($syllabus->schedule))
                 <form
                     method="POST"
-                    action="{{ route('teacher.materials.store') }}"
+                    action="{{ route('teacher.materials.store', $syllabus) }}"
                     enctype="multipart/form-data"
                     class="space-y-5"
                     data-pdf-upload
@@ -95,14 +95,14 @@
                         class="mt-4 flex flex-wrap gap-4 text-sm font-semibold text-[#7D3C98]"
                     >
                         <a
-                            href="{{ route('course.materials.pdf', $material) }}"
+                            href="{{ route('course.materials.pdf', [$syllabus, $material]) }}"
                             target="_blank"
                             rel="noopener noreferrer"
                             class="hover:underline"
                             >View PDF ↗</a
                         >
                         <a
-                            href="{{ route('course.materials.pdf', ['material' => $material, 'download' => 1]) }}"
+                            href="{{ route('course.materials.pdf', ['syllabus' => $syllabus, 'material' => $material, 'download' => 1]) }}"
                             class="hover:underline"
                             >Download</a
                         >
@@ -118,7 +118,7 @@
                         </summary>
                         <form
                             method="POST"
-                            action="{{ route('teacher.materials.update', $material) }}"
+                            action="{{ route('teacher.materials.update', [$syllabus, $material]) }}"
                             enctype="multipart/form-data"
                             class="mt-5 space-y-4"
                             data-pdf-upload
@@ -136,7 +136,7 @@
                     </details>
                     <form
                         method="POST"
-                        action="{{ route('teacher.materials.destroy', $material) }}"
+                        action="{{ route('teacher.materials.destroy', [$syllabus, $material]) }}"
                         class="mt-4"
                         onsubmit="
                             return confirm(
