@@ -21,12 +21,17 @@
         <a href="{{ route('teacher.syllabi.index') }}" class="mt-5 inline-block text-sm font-semibold text-[#7D3C98] hover:underline">Manage all courses →</a>
     </div>
 
+    <div class="mt-8 rounded-xl border border-purple-200 bg-purple-50/50 p-5">
+        <h2 class="text-lg font-bold">Grades</h2>
+        <div class="mt-5 flex flex-col gap-3 text-sm font-semibold text-[#7D3C98]">
+            <a href="{{ route('teacher.grades.index') }}" class="hover:underline">Manage Grades →</a>
+        </div>
+    </div>
+
     <form method="POST" action="{{ route('teacher.logout') }}" class="mt-8">
         @csrf
-        <button
-            type="submit"
-            class="w-full rounded-md bg-[#7D3C98] py-3 font-medium text-white transition hover:bg-[#701b94] focus:outline-none focus:ring-2 focus:ring-[#b085c2] focus:ring-offset-2"
-        >
+        <button type="submit"
+            class="w-full rounded-md bg-[#7D3C98] py-3 font-medium text-white transition hover:bg-[#701b94] focus:outline-none focus:ring-2 focus:ring-[#b085c2] focus:ring-offset-2">
             Log Out
         </button>
     </form>

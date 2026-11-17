@@ -8,6 +8,7 @@ use App\Models\FileUploadLink;
 use App\Models\Form;
 use App\Models\Student;
 use App\Models\StudentForm;
+use App\Models\Grade;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -22,6 +23,23 @@ class StudentController extends Controller
         return view('student.profile', compact('user', 'student'));
     }
 
+   public function grade()
+{
+    $student = Auth::user()->students()->first();
+
+    if (!$student) {
+        return view('student.grade', [
+            'grades' => collect(),
+        ]);
+    }
+
+    $grades = Grade::with('course')
+        ->where('student_id', $student->id)
+        ->get()
+        ->groupBy('course_syllabus_id');
+
+    return view('student.grade', compact('grades'));
+}
     // student links
 
     public function links()
