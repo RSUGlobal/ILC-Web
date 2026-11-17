@@ -13,10 +13,10 @@ class GuestPageController extends Controller
         $totalMentors = User::whereHas('mentors')->count();
         $totalTeamLeaders = User::whereHas('teamLeaders')->count();
         $totalStudents = User::whereHas('students')->count();
-        $courseSyllabus = CourseSyllabus::current();
+        $courseSyllabi = CourseSyllabus::query()->latest()->get();
 
         // Data is passed here. If the route points here, the view WILL receive these variables.
-        return view('guest', compact('totalUsers', 'totalMentors', 'totalTeamLeaders', 'totalStudents', 'courseSyllabus'));
+        return view('guest', compact('totalUsers', 'totalMentors', 'totalTeamLeaders', 'totalStudents', 'courseSyllabi'));
     }
 
     public function showAllPlaylists()

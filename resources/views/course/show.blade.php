@@ -54,7 +54,7 @@
                     </div>
                     @if ($syllabus->pdf_path)
                         <a
-                            href="{{ route('course.pdf', ['download' => 1]) }}"
+                            href="{{ route('course.pdf', ['syllabus' => $syllabus, 'download' => 1]) }}"
                             class="rounded-xl bg-amber-600 px-5 py-3 text-center text-sm font-bold text-white shadow-md transition hover:bg-amber-700"
                             >Download PDF</a
                         >
@@ -130,12 +130,12 @@
                                 </div>
                                 <div class="space-y-5 bg-purple-50/40 p-6">
                                     <a
-                                        href="{{ route('course.pdf', ['download' => 1]) }}"
+                                        href="{{ route('course.pdf', ['syllabus' => $syllabus, 'download' => 1]) }}"
                                         class="block rounded-xl bg-amber-600 px-5 py-4 text-center text-sm font-bold text-white shadow-sm transition hover:bg-amber-700"
                                         >Download Syllabus (PDF)</a
                                     >
                                     <a
-                                        href="{{ route('course.pdf') }}"
+                                        href="{{ route('course.pdf', $syllabus) }}"
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         class="block text-center text-sm font-semibold text-[#5B2C6F] underline-offset-4 hover:underline"

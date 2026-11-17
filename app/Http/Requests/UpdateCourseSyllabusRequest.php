@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests;
 
-use App\Models\CourseSyllabus;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Validator;
@@ -79,7 +78,7 @@ class UpdateCourseSyllabusRequest extends FormRequest
                 $validator->errors()->add('assessments', 'Assessment weights must add up to 100%.');
             }
 
-            $syllabus = CourseSyllabus::current();
+            $syllabus = $this->route('syllabus');
             if ($syllabus) {
                 $removedWeeks = $syllabus->materials()->pluck('week')->diff(array_column($this->input('schedule', []), 'week'))->unique();
                 if ($removedWeeks->isNotEmpty()) {

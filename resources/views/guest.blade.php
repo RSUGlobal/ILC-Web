@@ -223,7 +223,7 @@
                         </span>
                     </a>
                 </div>
-                @if ($courseSyllabus)
+                @foreach ($courseSyllabi as $courseSyllabus)
                 <div
                     class="flex flex-col items-left justify-center text-left gap-2 p-4 bg-white rounded-xl min-w-lg h-full max-h-64 border border-gray-200/20 shadow-md">
                     <svg class="bg-[#7d3c98]/20 rounded-lg p-1" xmlns="http://www.w3.org/2000/svg" width="36"
@@ -237,7 +237,7 @@
                     <p class="text-xs text-gray-500 min-h-[60px]">
                         {{ $courseSyllabus->title }}
                     </p>
-                    <a href="{{ route('course.show') }}" target="_blank" rel="noopener noreferrer"
+                    <a href="{{ route('course.show', $courseSyllabus) }}" target="_blank" rel="noopener noreferrer"
                         class="inline-flex w-fit items-center gap-2 rounded-lg bg-[#7D3C98]/10 px-4 py-2 text-sm font-medium text-[#7D3C98] transition-all duration-300 hover:bg-[#7D3C98] hover:text-white">
                         Learn More
                         <span class="transition-transform duration-300 group-hover:translate-x-1">
@@ -245,7 +245,7 @@
                         </span>
                     </a>
                 </div>
-                @endif
+                @endforeach
                 <div
                     class="flex flex-col items-left justify-center text-left gap-2 p-4 bg-white rounded-xl min-w-lg h-full max-h-64 border border-gray-200/20 shadow-md">
                     <svg class="bg-[#7d3c98]/20 rounded-lg p-1"xmlns="http://www.w3.org/2000/svg" width="36"

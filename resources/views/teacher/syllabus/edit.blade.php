@@ -1,15 +1,15 @@
-<x-teacher-layout title="Edit course syllabus" :wide="true">
+<x-teacher-layout :title="$syllabus->exists ? 'Edit course syllabus' : 'Add course syllabus'" :wide="true">
     @include ('teacher.syllabus._navigation')
     <p class="mb-6 text-sm text-slate-600">Changes appear on the public course page when you save. Fields marked * are required.</p>
 
     <form
         id="syllabus-form"
         method="POST"
-        action="{{ route('teacher.syllabus.update') }}"
+        action="{{ $syllabus->exists ? route('teacher.syllabus.update', $syllabus) : route('teacher.syllabus.store') }}"
         class="space-y-6"
     >
         @csrf
-        @method ('PUT')
+        @if ($syllabus->exists) @method ('PUT') @endif
         <x-course-section title="Course information">
             <div class="grid gap-5 sm:grid-cols-2">
                 <x-teacher-field
