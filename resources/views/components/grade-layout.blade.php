@@ -45,7 +45,7 @@
                         Account
                     </a>
 
-                    <a href="{{ route('teacher.syllabus.edit') }}"
+                    <a href="{{ route('teacher.syllabi.index') }}"
                        class="hover:underline">
                         Course Syllabus
                     </a>

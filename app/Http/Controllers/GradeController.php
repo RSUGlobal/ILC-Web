@@ -3,101 +3,79 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Teacher;
 use Illuminate\Support\Facades\Auth;
-use App\Http\Controllers\Student\StudentController;
 use App\Models\CourseSyllabus;
 use App\Models\Grade;
 use App\Models\Student;
 
 class GradeController extends Controller
 {
-    //
-   public function index()
-{
-    $teacher = Auth::guard('teacher')->user();
+    public function index()
+    {
+        $teacher = Auth::guard('teacher')->user();
 
-    $grades = $teacher->grades()->with(['student', 'course'])->get();
+        $grades = $teacher->grades()->with(['student.user', 'course'])->latest()->get();
 
-    return view('teacher.grades.index', compact('grades'));
-}
-public function create()
-{
-    $courses = CourseSyllabus::all();
-    return view('teacher.grades.create', compact('courses'));
-}
+        return view('teacher.grades.index', compact('grades'));
+    }
 
-public function store(Request $request)
-{
-    $request->validate([
-        'student_id' => ['required', 'exists:students,student_id'],
-        'course_syllabus_id' => ['required', 'exists:course_syllabi,id'],
-        'grade' => ['required', 'in:A,B+,B,C+,C,D+,D,F'],
-    ]);
+    public function create()
+    {
+        $courses = CourseSyllabus::query()->orderBy('code')->get();
 
-    $teacher = Auth::guard('teacher')->user();
+        return view('teacher.grades.create', compact('courses'));
+    }
 
-    $student = Student::where('student_id', $request->student_id)
-        ->firstOrFail();
+    public function store(Request $request)
+    {
+        $data = $request->validate([
+            'student_id' => ['required', 'exists:students,student_id'],
+            'course_syllabus_id' => ['required', 'exists:course_syllabi,id'],
+            'grade' => ['required', 'in:A,B+,B,C+,C,D+,D,F'],
+        ]);
 
-    Grade::updateOrCreate(
-        [
-            'teacher_id' => $teacher->id,
-            'student_id' => $student->id,
-            'course_syllabus_id' => $request->course_syllabus_id,
-        ],
-        [
-            'grade' => $request->grade,
-        ]
-    );
+        $teacher = Auth::guard('teacher')->user();
+        $student = Student::query()->where('student_id', $data['student_id'])->firstOrFail();
 
-    return redirect()
-        ->route('teacher.grades.index')
-        ->with('success', 'Student grade saved successfully!');
-}
-   public function edit($id)
-{
-    $teacher = Auth::guard('teacher')->user();
+        Grade::updateOrCreate(
+            [
+                'teacher_id' => $teacher->id,
+                'student_id' => $student->id,
+                'course_syllabus_id' => $data['course_syllabus_id'],
+            ],
+            ['grade' => $data['grade']],
+        );
 
-    $grade = Grade::where('id', $id)
-        ->where('teacher_id', $teacher->id)
-        ->firstOrFail();
+        return redirect()->route('teacher.grades.index')->with('success', 'Student grade saved successfully.');
+    }
 
-    return view('teacher.grades.edit', compact('grade'));
-}
+    public function edit(int $id)
+    {
+        $grade = $this->teacherGrade($id);
 
-public function update(Request $request, $id)
-{
-    $request->validate([
-        'grade' => ['required', 'in:A,B+,B,C+,C,D+,D,F'],
-    ]);
+        return view('teacher.grades.edit', compact('grade'));
+    }
 
-    $teacher = Auth::guard('teacher')->user();
+    public function update(Request $request, int $id)
+    {
+        $data = $request->validate(['grade' => ['required', 'in:A,B+,B,C+,C,D+,D,F']]);
+        $this->teacherGrade($id)->update($data);
 
-    $grade = Grade::where('id', $id)
-        ->where('teacher_id', $teacher->id)
-        ->firstOrFail();
+        return redirect()->route('teacher.grades.index')->with('success', 'Student grade updated successfully.');
+    }
 
-    $grade->update([
-        'grade' => $request->grade,
-    ]);
+    public function destroy(int $id)
+    {
+        $this->teacherGrade($id)->delete();
 
-    return redirect()
-        ->route('teacher.grades.index')
-        ->with('success', 'Student grade updated successfully!');
-}
-public function destroy($id)
-{
-    $teacher = Auth::guard('teacher')->user();
+        return redirect()->route('teacher.grades.index')->with('success', 'Student grade deleted successfully.');
+    }
 
-    $grade = Grade::where('id', $id)
-        ->where('teacher_id', $teacher->id)
-        ->firstOrFail();
-
-    $grade->delete();
-
-    return redirect()
-        ->route('teacher.grades.index')
-        ->with('success', 'Student grade deleted successfully!');
-}
+    private function teacherGrade(int $id): Grade
+    {
+        return Grade::query()
+            ->whereKey($id)
+            ->where('teacher_id', Auth::guard('teacher')->id())
+            ->firstOrFail();
+    }
 }

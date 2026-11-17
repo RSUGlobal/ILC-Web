@@ -14,20 +14,14 @@ return new class extends Migration
         Schema::create('grades', function (Blueprint $table) {
             $table->id();
             $table->unsignedTinyInteger('teacher_id');
-        $table->foreign('teacher_id')
-              ->references('id')
-              ->on('teachers')
-              ->onDelete('cascade');
+            $table->foreign('teacher_id')->references('id')->on('teachers')->cascadeOnDelete();
 
-        $table->foreignId('student_id')
-              ->constrained('students')
-              ->onDelete('cascade');
+            $table->foreignId('student_id')->constrained('students')->cascadeOnDelete();
 
-               $table->foreignId('course_syllabus_id')
-          ->constrained('course_syllabi')
-          ->onDelete('cascade');
+            $table->foreignId('course_syllabus_id')->constrained()->cascadeOnDelete();
 
-        $table->enum('grade', ['A', 'B+', 'B', 'C+', 'C', 'D+', 'D', 'F']);
+            $table->enum('grade', ['A', 'B+', 'B', 'C+', 'C', 'D+', 'D', 'F']);
+            $table->unique(['teacher_id', 'student_id', 'course_syllabus_id']);
 
             $table->timestamps();
         });
